@@ -65,17 +65,21 @@
       const total = subtotal + delivery;
 
       const placeOrder = async () => {
-        const res = await fetch(API_URL, {
-          method: "POST",
-          body: JSON.stringify({
-            action: "placeOrder",
-            ...checkout,
-            items: cart.map((item) => ({
-              product_id: item.product_id,
-              qty: item.qty,
-            })),
-          }),
-        });
+const res = await fetch(API_URL, {
+  method: "POST",
+  headers: {
+    "Content-Type": "text/plain;charset=utf-8"
+  },
+  body: JSON.stringify({
+    action: "placeOrder",
+    ...checkout,
+    items: cart.map((item) => ({
+      product_id: item.product_id,
+      qty: item.qty,
+    })),
+  }),
+  redirect: "follow"
+});
 
         const data = await res.json();
         setOrderResult(data);
