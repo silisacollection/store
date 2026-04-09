@@ -26,6 +26,9 @@
       });
       const [orderResult, setOrderResult] = useState(null);
       const [loading, setLoading] = useState(true);
+const [search, setSearch] = useState("");
+const [selectedCategory, setSelectedCategory] = useState("All");
+const LOGO_URL = "https://drive.google.com/file/d/10Wo83nhJevZjvWPFADW0br4FzQJSqf7o/view?usp=sharing";
 
       useEffect(() => {
         fetch(`${API_URL}?action=products`)
