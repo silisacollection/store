@@ -64,28 +64,84 @@
       const delivery = cart.length ? 50 : 0;
       const total = subtotal + delivery;
 
-      const placeOrder = async () => {
-const res = await fetch(API_URL, {
-  method: "POST",
-  headers: {
-    "Content-Type": "text/plain;charset=utf-8"
-  },
-  body: JSON.stringify({
-    action: "placeOrder",
-    ...checkout,
-    items: cart.map((item) => ({
-      product_id: item.product_id,
-      qty: item.qty,
-    })),
-  }),
-  redirect: "follow"
-});
+function placeOrder(data) {
+  const inventory = getSheet('inventory');
+  const orders = getSheet('orders');
+  const orderList = getSheet('order_list');
+  const finance = getSheet('finance');
 
-        const data = await res.json();
-        setOrderResult(data);
-        setCart([]);
-      };
+  const orderNo = 'ORD-' + new Date().getTime();
+  const items = data.items;
 
+  let total = 0;
+  let totalCost = 0;
+
+  const invData = inventory.getDataRange().getValues();
+
+  items.forEach(item => {
+    for (let i = 1; i < invData.length; i++) {
+      if (invData[i][0] === item.product_id) {
+        const stock = Number(invData[i][5]);
+        const price = Number(invData[i][3]);
+        const cost = Number(invData[i][4]);
+
+        if (stock < item.qty) {
+          throw new Error('Out of stock for ' + item.product_id);
+        }
+
+        // decrease inventory
+        inventory.getRange(i + 1, 6).setValue(stock - item.qty);
+
+        const lineTotal = price * item.qty;
+        total += lineTotal;
+        totalCost += cost * item.qty;
+
+        // add to order list
+        orderList.appendRow([
+          orderNo,
+          item.product_id,
+          item.qty,
+          price,
+          lineTotal
+        ]);
+
+        break;
+      }
+    }
+  });
+
+  const grandTotal = total + DELIVERY_CHARGE;
+  const profit = total - totalCost - DELIVERY_CHARGE;
+
+  // save order
+  orders.appendRow([
+    orderNo,
+    new Date(),
+    data.customer,
+    data.phone,
+    data.address,
+    total,
+    DELIVERY_CHARGE,
+    grandTotal,
+    'pending',
+    0
+  ]);
+
+  // save finance
+  finance.appendRow([
+    orderNo,
+    total,
+    totalCost,
+    DELIVERY_CHARGE,
+    profit,
+    0
+  ]);
+
+  return {
+    success: true,
+    orderNo: orderNo
+  };
+}
       if (orderResult?.success) {
         return (
           <div className="min-h-screen flex items-center justify-center p-8">
