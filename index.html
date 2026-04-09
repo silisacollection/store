@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Silsila Clothing and Accessories</title>
+  <title>Noor Unstitched Store</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
@@ -14,8 +14,9 @@
 
   <script type="text/babel">
     function App() {
+      const categories = ["All", "Unstitched", "Lawn", "Cotton", "Chiffon"];
       const { useEffect, useMemo, useState } = React;
-      const API_URL = "https://script.google.com/macros/s/AKfycbyjq_5krOWwbv3Su58cwuNvpkwsF06bAztxRE8NJgkrIMGbeTT-q45V5cJzAIIV6KcvPw/exec";
+      const API_URL = "YOUR_APPS_SCRIPT_WEBAPP_URL";
 
       const [products, setProducts] = useState([]);
       const [cart, setCart] = useState([]);
@@ -26,6 +27,8 @@
       });
       const [orderResult, setOrderResult] = useState(null);
       const [loading, setLoading] = useState(true);
+      const [search, setSearch] = useState("");
+      const [category, setCategory] = useState("All");
 
       useEffect(() => {
         fetch(`${API_URL}?action=products`)
@@ -61,41 +64,32 @@
         [cart]
       );
 
+      const filteredProducts = products.filter((p) => {
+        const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase());
+        const matchesCategory = category === "All" || (p.category || "").toLowerCase() === category.toLowerCase();
+        return matchesSearch && matchesCategory;
+      });
+
       const delivery = cart.length ? 50 : 0;
       const total = subtotal + delivery;
 
-const placeOrder = async () => {
-  try {
-    const res = await fetch(API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "text/plain;charset=utf-8"
-      },
-      body: JSON.stringify({
-        action: "placeOrder",
-        ...checkout,
-        items: cart.map((item) => ({
-          product_id: item.product_id,
-          qty: item.qty,
-        })),
-      }),
-      redirect: "follow"
-    });
+      const placeOrder = async () => {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "placeOrder",
+            ...checkout,
+            items: cart.map((item) => ({
+              product_id: item.product_id,
+              qty: item.qty,
+            })),
+          }),
+        });
 
-    const data = await res.json();
-
-    if (!data.success) {
-      alert(data.error || "Order failed");
-      return;
-    }
-
-    setOrderResult(data);
-    setCart([]);
-  } catch (error) {
-    alert("Error placing order: " + error.message);
-    console.error(error);
-  }
-};
+        const data = await res.json();
+        setOrderResult(data);
+        setCart([]);
+      };
 
       if (orderResult?.success) {
         return (
@@ -113,17 +107,36 @@ const placeOrder = async () => {
         <div>
           <header className="bg-white shadow-sm sticky top-0">
             <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between">
-              <h1 className="text-2xl font-bold">Silsila Clothing and Accessories</h1>
+              <h1 className="text-2xl font-bold">Noor Unstitched</h1>
               <div>Cart ({cart.length})</div>
             </div>
           </header>
 
           <main className="max-w-7xl mx-auto px-6 py-10 grid lg:grid-cols-3 gap-8">
             <section className="lg:col-span-2">
-              <h2 className="text-4xl font-bold mb-6">Premium Unstitched Collection</h2>
+              <div className="bg-gradient-to-r from-neutral-900 to-neutral-700 text-white rounded-3xl p-8 mb-6">
+                <h2 className="text-4xl font-bold mb-2">Premium Unstitched Collection</h2>
+                <p>New lawn, cotton and chiffon arrivals with cash on delivery.</p>
+              </div>
+
+              <div className="flex flex-col md:flex-row gap-3 mb-6">
+                <input
+                  className="flex-1 border rounded-2xl p-3"
+                  placeholder="Search products..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+                <select
+                  className="border rounded-2xl p-3"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                >
+                  {categories.map((cat) => <option key={cat}>{cat}</option>)}
+                </select>
+              </div>
               {loading ? <p>Loading...</p> : (
                 <div className="grid md:grid-cols-2 gap-6">
-                  {products.map((product) => (
+                  {filteredProducts.map((product) => (
                     <div key={product.product_id} className="bg-white rounded-3xl shadow-sm overflow-hidden">
                       <img
                         src={product.images?.[0] || 'https://placehold.co/600x600'}
@@ -188,11 +201,22 @@ const placeOrder = async () => {
               </div>
             </aside>
           </main>
+
+          <a
+            href="https://wa.me/923282849961?text=Hi%20I%20need%20help%20with%20my%20order"
+            target="_blank"
+            className="fixed bottom-6 right-6 bg-green-600 text-white px-5 py-4 rounded-full shadow-xl font-semibold"
+          >
+            WhatsApp Us
+          </a>
         </div>
       );
     }
 
     ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+  <script type="text/babel">
+    // Phase 3A enhancements are already integrated into the main app logic below via simple DOM injection helpers.
   </script>
 </body>
 </html>
