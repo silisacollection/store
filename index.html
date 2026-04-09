@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Silsila Clothing and Accessories</title>
+  <title>Noor Unstitched Store</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
@@ -64,84 +64,39 @@
       const delivery = cart.length ? 50 : 0;
       const total = subtotal + delivery;
 
-function placeOrder(data) {
-  const inventory = getSheet('inventory');
-  const orders = getSheet('orders');
-  const orderList = getSheet('order_list');
-  const finance = getSheet('finance');
+const placeOrder = async () => {
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify({
+        action: "placeOrder",
+        ...checkout,
+        items: cart.map((item) => ({
+          product_id: item.product_id,
+          qty: item.qty,
+        })),
+      }),
+      redirect: "follow"
+    });
 
-  const orderNo = 'ORD-' + new Date().getTime();
-  const items = data.items;
+    const data = await res.json();
 
-  let total = 0;
-  let totalCost = 0;
-
-  const invData = inventory.getDataRange().getValues();
-
-  items.forEach(item => {
-    for (let i = 1; i < invData.length; i++) {
-      if (invData[i][0] === item.product_id) {
-        const stock = Number(invData[i][5]);
-        const price = Number(invData[i][3]);
-        const cost = Number(invData[i][4]);
-
-        if (stock < item.qty) {
-          throw new Error('Out of stock for ' + item.product_id);
-        }
-
-        // decrease inventory
-        inventory.getRange(i + 1, 6).setValue(stock - item.qty);
-
-        const lineTotal = price * item.qty;
-        total += lineTotal;
-        totalCost += cost * item.qty;
-
-        // add to order list
-        orderList.appendRow([
-          orderNo,
-          item.product_id,
-          item.qty,
-          price,
-          lineTotal
-        ]);
-
-        break;
-      }
+    if (!data.success) {
+      alert(data.error || "Order failed");
+      return;
     }
-  });
 
-  const grandTotal = total + DELIVERY_CHARGE;
-  const profit = total - totalCost - DELIVERY_CHARGE;
+    setOrderResult(data);
+    setCart([]);
+  } catch (error) {
+    alert("Error placing order: " + error.message);
+    console.error(error);
+  }
+};
 
-  // save order
-  orders.appendRow([
-    orderNo,
-    new Date(),
-    data.customer,
-    data.phone,
-    data.address,
-    total,
-    DELIVERY_CHARGE,
-    grandTotal,
-    'pending',
-    0
-  ]);
-
-  // save finance
-  finance.appendRow([
-    orderNo,
-    total,
-    totalCost,
-    DELIVERY_CHARGE,
-    profit,
-    0
-  ]);
-
-  return {
-    success: true,
-    orderNo: orderNo
-  };
-}
       if (orderResult?.success) {
         return (
           <div className="min-h-screen flex items-center justify-center p-8">
@@ -158,7 +113,7 @@ function placeOrder(data) {
         <div>
           <header className="bg-white shadow-sm sticky top-0">
             <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between">
-              <h1 className="text-2xl font-bold">Silsila Clothing and Accessories</h1>
+              <h1 className="text-2xl font-bold">Noor Unstitched</h1>
               <div>Cart ({cart.length})</div>
             </div>
           </header>
