@@ -30,6 +30,7 @@
 const [search, setSearch] = useState("");
 const [selectedCategory, setSelectedCategory] = useState("All");
 const [selectedProduct, setSelectedProduct] = useState(null);
+      const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 const LOGO_URL = "./logo.png";
 
       useEffect(() => {
@@ -176,7 +177,10 @@ const placeOrder = async () => {
                   {filteredProducts.map((product) => (
                     <div
   key={product.product_id}
-  onClick={() => setSelectedProduct(product)}
+  onClick={() => {
+  setSelectedProduct(product);
+  setSelectedImageIndex(0);
+}}
   className="bg-white rounded-3xl shadow-sm overflow-hidden cursor-pointer hover:shadow-xl transition"
 >
                       <img
@@ -252,10 +256,30 @@ const placeOrder = async () => {
         ×
       </button>
 
+<div className="p-4">
+  <img
+    src={
+      selectedProduct.images?.[selectedImageIndex] ||
+      "https://placehold.co/800x1000"
+    }
+    className="w-full h-[500px] object-cover rounded-2xl"
+  />
+
+  <div className="flex gap-3 mt-4 overflow-x-auto">
+    {selectedProduct.images?.map((img, index) => (
       <img
-        src={selectedProduct.images?.[0] || "https://placehold.co/800x1000"}
-        className="w-full h-full object-cover min-h-[500px]"
+        key={index}
+        src={img}
+        onClick={() => setSelectedImageIndex(index)}
+        className={`w-20 h-20 rounded-xl object-cover cursor-pointer border-2 ${
+          selectedImageIndex === index
+            ? "border-black"
+            : "border-transparent"
+        }`}
       />
+    ))}
+  </div>
+</div>
 
       <div className="p-8 flex flex-col justify-between">
         <div>
