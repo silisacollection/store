@@ -42,12 +42,14 @@ const LOGO_URL = "./logo.png";
           .finally(() => setLoading(false));
       }, []);
 
-      useEffect(() => {
+useEffect(() => {
+  if (!products.length) return;
+
   const interval = setInterval(() => {
     setImageIndexes((prev) => {
       const updated = { ...prev };
 
-      filteredProducts.forEach((product) => {
+      products.forEach((product) => {
         const totalImages = product.images?.length || 1;
         updated[product.product_id] =
           ((prev[product.product_id] || 0) + 1) % totalImages;
@@ -58,7 +60,7 @@ const LOGO_URL = "./logo.png";
   }, 2000);
 
   return () => clearInterval(interval);
-}, [filteredProducts]);
+}, [products]);
 
       const addToCart = (product) => {
         setCart((prev) => {
