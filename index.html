@@ -28,7 +28,7 @@
       const [orderResult, setOrderResult] = useState(null);
       const [loading, setLoading] = useState(true);
 const [search, setSearch] = useState("");
-const [selectedCategory, setSelectedCategory] = useState("All");
+const [selectedProduct, setSelectedProduct] = useState(null);
 const LOGO_URL = "./logo.png";
 
       useEffect(() => {
@@ -173,7 +173,11 @@ const placeOrder = async () => {
               {loading ? <p>Loading...</p> : (
                 <div className="grid md:grid-cols-2 gap-6">
                   {filteredProducts.map((product) => (
-                    <div key={product.product_id} className="bg-white rounded-3xl shadow-sm overflow-hidden">
+                    <div
+  key={product.product_id}
+  onClick={() => setSelectedProduct(product)}
+  className="bg-white rounded-3xl shadow-sm overflow-hidden cursor-pointer hover:shadow-xl transition"
+>
                       <img
                         src={product.images?.[0] || 'https://placehold.co/600x600'}
                         className="w-full h-72 object-cover"
@@ -236,6 +240,51 @@ const placeOrder = async () => {
                 </div>
               </div>
             </aside>
+            {selectedProduct && (
+  <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+    <div className="bg-white rounded-3xl max-w-4xl w-full grid md:grid-cols-2 overflow-hidden relative">
+      
+      <button
+        onClick={() => setSelectedProduct(null)}
+        className="absolute top-4 right-4 text-2xl"
+      >
+        ×
+      </button>
+
+      <img
+        src={selectedProduct.images?.[0] || "https://placehold.co/800x1000"}
+        className="w-full h-full object-cover min-h-[500px]"
+      />
+
+      <div className="p-8 flex flex-col justify-between">
+        <div>
+          <h2 className="text-3xl font-bold">{selectedProduct.name}</h2>
+          <p className="text-neutral-500 mt-2">
+            Premium unstitched fabric with elegant finish and original quality.
+          </p>
+
+          <p className="text-3xl font-bold mt-6">
+            Rs {selectedProduct.price}
+          </p>
+
+          <p className="mt-3 text-sm text-neutral-500">
+            Stock: {selectedProduct.stock}
+          </p>
+        </div>
+
+        <button
+          onClick={() => {
+            addToCart(selectedProduct);
+            setSelectedProduct(null);
+          }}
+          className="mt-8 bg-black text-white py-4 rounded-2xl text-lg"
+        >
+          Add to Cart
+        </button>
+      </div>
+    </div>
+  </div>
+)}
           </main>
         </div>
       );
