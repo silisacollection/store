@@ -366,24 +366,34 @@ const placeOrder = async () => {
 
 <button
   onClick={async () => {
-    const customer = checkout.customer || "Website Visitor";
-    const phone = checkout.phone || "Not provided";
+    const customerPhone = prompt("Enter your WhatsApp number");
 
-    await fetch(API_URL, {
+    if (!customerPhone) return;
+
+    const customerName = checkout.customer || "Website Visitor";
+
+    const res = await fetch(API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "text/plain;charset=utf-8"
       },
       body: JSON.stringify({
         action: "whatsappInquiry",
-        customer,
-        phone,
+        customer: customerName,
+        phone: customerPhone,
         product: selectedProduct.name,
-        price: selectedProduct.price
+        price: selectedProduct.price,
+        image: selectedProduct.images?.[0] || ""
       })
     });
 
-    alert("Your inquiry has been sent to our WhatsApp team.");
+    const data = await res.json();
+
+    if (data.success) {
+      alert("Your inquiry has been sent to our WhatsApp team.");
+    } else {
+      alert("Failed to send inquiry.");
+    }
   }}
   className="mt-4 block w-full text-center border py-4 rounded-2xl"
 >
