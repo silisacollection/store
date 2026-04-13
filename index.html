@@ -214,6 +214,35 @@ const placeOrder = async () => {
                         <h3 className="text-xl font-semibold">{product.name}</h3>
                         <p className="text-neutral-500">Stock: {product.stock}</p>
                         <p className="text-2xl font-bold mt-3">Rs {product.price}</p>
+                        <div className="flex items-center gap-4 mt-6">
+  <button
+    onClick={() =>
+      setSelectedProduct({
+        ...selectedProduct,
+        qty: Math.max(1, (selectedProduct.qty || 1) - 1),
+      })
+    }
+    className="border px-4 py-2 rounded-xl"
+  >
+    -
+  </button>
+
+  <span className="text-xl font-semibold">
+    {selectedProduct.qty || 1}
+  </span>
+
+  <button
+    onClick={() =>
+      setSelectedProduct({
+        ...selectedProduct,
+        qty: (selectedProduct.qty || 1) + 1,
+      })
+    }
+    className="border px-4 py-2 rounded-xl"
+  >
+    +
+  </button>
+</div>
                         <button
                           onClick={() => addToCart(product)}
                           className="w-full mt-4 bg-black text-white py-3 rounded-2xl"
@@ -322,7 +351,9 @@ const placeOrder = async () => {
 
         <button
           onClick={() => {
-            addToCart(selectedProduct);
+            for (let i = 0; i < (selectedProduct.qty || 1); i++) {
+  addToCart(selectedProduct);
+}
             setSelectedProduct(null);
           }}
           className="mt-8 bg-black text-white py-4 rounded-2xl text-lg"
