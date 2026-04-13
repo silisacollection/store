@@ -358,8 +358,20 @@ const placeOrder = async () => {
           }}
           className="mt-8 bg-black text-white py-4 rounded-2xl text-lg"
         >
+        
           Add to Cart
         </button>
+
+        <a
+  href={`https://wa.me/923327477686?text=${encodeURIComponent(
+    `Hi, I want to ask about ${selectedProduct.name} - Rs ${selectedProduct.price}`
+  )}`}
+  target="_blank"
+  className="mt-4 block text-center border py-4 rounded-2xl"
+>
+  Ask on WhatsApp
+</a>
+        
       </div>
     </div>
   </div>
