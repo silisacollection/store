@@ -30,7 +30,9 @@
 const [search, setSearch] = useState("");
 const [selectedCategory, setSelectedCategory] = useState("All");
 const [selectedProduct, setSelectedProduct] = useState(null);
-      const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+      const [selectedImageIndex, setSelectedImageIndex] = useState(0);  
+const [imageIndexes, setImageIndexes] = useState({});
+      
 const LOGO_URL = "./logo.png";
 
       useEffect(() => {
@@ -39,6 +41,24 @@ const LOGO_URL = "./logo.png";
           .then((data) => setProducts(data || []))
           .finally(() => setLoading(false));
       }, []);
+
+      useEffect(() => {
+  const interval = setInterval(() => {
+    setImageIndexes((prev) => {
+      const updated = { ...prev };
+
+      filteredProducts.forEach((product) => {
+        const totalImages = product.images?.length || 1;
+        updated[product.product_id] =
+          ((prev[product.product_id] || 0) + 1) % totalImages;
+      });
+
+      return updated;
+    });
+  }, 2000);
+
+  return () => clearInterval(interval);
+}, [filteredProducts]);
 
       const addToCart = (product) => {
         setCart((prev) => {
@@ -184,7 +204,10 @@ const placeOrder = async () => {
   className="bg-white rounded-3xl shadow-sm overflow-hidden cursor-pointer hover:shadow-xl transition"
 >
                       <img
-                        src={product.images?.[0] || 'https://placehold.co/600x600'}
+                        src={
+  product.images?.[imageIndexes[product.product_id] || 0] ||
+  "https://placehold.co/600x600"
+}
                         className="w-full h-72 object-cover"
                       />
                       <div className="p-6">
