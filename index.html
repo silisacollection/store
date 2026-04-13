@@ -364,15 +364,23 @@ const placeOrder = async () => {
           Add to Cart
         </button>
 
-        <a
-  href={`https://wa.me/923327477686?text=${encodeURIComponent(
-    `Hi, I want to ask about ${selectedProduct.name} - Rs ${selectedProduct.price}`
-  )}`}
-  target="_blank"
-  className="mt-4 block text-center border py-4 rounded-2xl"
+<button
+  onClick={() => {
+    const customerPhone = prompt("Enter your phone number:");
+
+    if (!customerPhone) return;
+
+    const message = `Hi, I want to ask about ${selectedProduct.name} - Rs ${selectedProduct.price}. My phone number is ${customerPhone}`;
+
+    window.open(
+      `https://wa.me/971585329686?text=${encodeURIComponent(message)}`,
+      "_blank"
+    );
+  }}
+  className="mt-4 block w-full text-center border py-4 rounded-2xl"
 >
   Ask on WhatsApp
-</a>
+</button>
         
       </div>
     </div>
