@@ -365,17 +365,25 @@ const placeOrder = async () => {
         </button>
 
 <button
-  onClick={() => {
-    const customerPhone = prompt("Enter your phone number:");
+  onClick={async () => {
+    const customer = checkout.customer || "Website Visitor";
+    const phone = checkout.phone || "Not provided";
 
-    if (!customerPhone) return;
+    await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify({
+        action: "whatsappInquiry",
+        customer,
+        phone,
+        product: selectedProduct.name,
+        price: selectedProduct.price
+      })
+    });
 
-    const message = `Hi, I want to ask about ${selectedProduct.name} - Rs ${selectedProduct.price}. My phone number is ${customerPhone}`;
-
-    window.open(
-      `https://wa.me/971585329686?text=${encodeURIComponent(message)}`,
-      "_blank"
-    );
+    alert("Your inquiry has been sent to our WhatsApp team.");
   }}
   className="mt-4 block w-full text-center border py-4 rounded-2xl"
 >
