@@ -365,25 +365,19 @@ const placeOrder = async () => {
         </button>
 
 <button
-onClick={async () => {
-  const customerPhone = prompt("Enter your WhatsApp number");
-  if (!customerPhone) return;
+  onClick={async () => {
+    await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify({
+        action: "whatsappInquiry"
+      })
+    });
 
-  const res = await fetch(API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "text/plain;charset=utf-8"
-    },
-    body: JSON.stringify({
-      action: "whatsappInquiry"
-    })
-  });
-
-  const text = await res.text();
-  console.log(text);
-
-  alert("Your inquiry has been sent to our WhatsApp team.");
-}}}
+    alert("WhatsApp message sent successfully.");
+  }}
   className="mt-4 block w-full text-center border py-4 rounded-2xl"
 >
   Ask on WhatsApp
