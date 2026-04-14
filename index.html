@@ -377,24 +377,9 @@ const placeOrder = async () => {
 
 <button
 onClick={async () => {
-  const phone = checkout.phone.replace(/\D/g, "");
+  const phone = prompt("Enter your WhatsApp number");
 
-  if (!phone) {
-    alert("Please enter your phone number in checkout first");
-    return;
-  }
-
-  const normalizedPhone =
-    phone.startsWith("03")
-      ? "92" + phone.substring(1)
-      : phone.startsWith("3") && phone.length === 10
-      ? "92" + phone
-      : phone;
-
-  if (!/^92\d{10}$/.test(normalizedPhone)) {
-    alert("Please enter valid phone number");
-    return;
-  }
+  if (!phone) return;
 
   const res = await fetch(API_URL, {
     method: "POST",
@@ -404,7 +389,7 @@ onClick={async () => {
     body: JSON.stringify({
       action: "whatsappInquiry",
       customer: checkout.customer || "Website Visitor",
-      phone: normalizedPhone,
+      phone,
       product: selectedProduct.name,
       price: selectedProduct.price
     })
@@ -413,12 +398,11 @@ onClick={async () => {
   const data = await res.json();
 
   if (data.success) {
-    alert("Inquiry sent on your WhatsApp successfully");
+    alert("Inquiry sent successfully on WhatsApp");
   } else {
     alert(data.error);
   }
 }}
->
   Ask on WhatsApp
 </button>
         
