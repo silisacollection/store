@@ -261,12 +261,9 @@ const placeOrder = async () => {
                     onChange={(e) => setCheckout({...checkout, customer: e.target.value})} />
                   <input className="w-full border rounded-2xl p-3" placeholder="Phone"
                     onChange={(e) => setCheckout({...checkout, phone: e.target.value})} />
-                  <input
-  placeholder="Email"
-  onChange={(e) =>
-    setCheckout({ ...checkout, email: e.target.value })
-  }
-/>
+                  <input className="w-full border rounded-2xl p-3" placeholder="Email"
+                    onChange={(e) => setCheckout({...checkout, email: e.target.value})} />
+                  
                   <textarea className="w-full border rounded-2xl p-3" rows="4" placeholder="Address"
                     onChange={(e) => setCheckout({...checkout, address: e.target.value})}></textarea>
                   <button
