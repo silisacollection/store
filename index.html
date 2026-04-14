@@ -376,33 +376,35 @@ const placeOrder = async () => {
         </button>
 
 <button
-onClick={async () => {
-  const phone = prompt("Enter your WhatsApp number");
+  onClick={async () => {
+    const phone = prompt("Enter your WhatsApp number");
 
-  if (!phone) return;
+    if (!phone) return;
 
-  const res = await fetch(API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "text/plain;charset=utf-8"
-    },
-    body: JSON.stringify({
-      action: "whatsappInquiry",
-      customer: checkout.customer || "Website Visitor",
-      phone,
-      product: selectedProduct.name,
-      price: selectedProduct.price
-    })
-  });
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify({
+        action: "whatsappInquiry",
+        customer: checkout.customer || "Website Visitor",
+        phone,
+        product: selectedProduct.name,
+        price: selectedProduct.price
+      })
+    });
 
-  const data = await res.json();
+    const data = await res.json();
 
-  if (data.success) {
-    alert("Inquiry sent successfully on WhatsApp");
-  } else {
-    alert(data.error);
-  }
-}}
+    if (data.success) {
+      alert("Inquiry sent successfully on WhatsApp");
+    } else {
+      alert(data.error);
+    }
+  }}
+  className="mt-4 border border-black py-3 rounded-2xl"
+>
   Ask on WhatsApp
 </button>
         
