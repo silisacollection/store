@@ -23,6 +23,8 @@
         customer: "",
         phone: "",
         address: "",
+        email: "",
+        
  
       });
       const [orderResult, setOrderResult] = useState(null);
@@ -259,6 +261,12 @@ const placeOrder = async () => {
                     onChange={(e) => setCheckout({...checkout, customer: e.target.value})} />
                   <input className="w-full border rounded-2xl p-3" placeholder="Phone"
                     onChange={(e) => setCheckout({...checkout, phone: e.target.value})} />
+                  <input
+  placeholder="Email"
+  onChange={(e) =>
+    setCheckout({ ...checkout, email: e.target.value })
+  }
+/>
                   <textarea className="w-full border rounded-2xl p-3" rows="4" placeholder="Address"
                     onChange={(e) => setCheckout({...checkout, address: e.target.value})}></textarea>
                   <button
@@ -366,19 +374,35 @@ const placeOrder = async () => {
 
 <button
   onClick={async () => {
-    await fetch(API_URL, {
+    const phone = prompt("Enter WhatsApp number in 92XXXXXXXXXX format");
+
+    if (!/^92\d{10}$/.test(phone)) {
+      alert("Please enter valid Pakistan WhatsApp number");
+      return;
+    }
+
+    const res = await fetch(API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "text/plain;charset=utf-8"
       },
       body: JSON.stringify({
-        action: "whatsappInquiry"
+        action: "whatsappInquiry",
+        customer: checkout.customer || "Website Visitor",
+        phone,
+        product: selectedProduct.name,
+        price: selectedProduct.price
       })
     });
 
-    alert("WhatsApp message sent successfully.");
+    const data = await res.json();
+
+    if (data.success) {
+      alert("Inquiry received successfully.");
+    } else {
+      alert(data.error);
+    }
   }}
-  className="mt-4 block w-full text-center border py-4 rounded-2xl"
 >
   Ask on WhatsApp
 </button>
