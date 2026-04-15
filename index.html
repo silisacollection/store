@@ -92,6 +92,19 @@ useEffect(() => {
       );
 
      const categories = ["All", ...new Set(products.map(p => p.category || "Unstitched"))];
+      const categoryImageMap = useMemo(() => {
+  const map = {};
+
+  products.forEach((product) => {
+    const cat = product.category || "Unstitched";
+
+    if (!map[cat] && product.images?.length) {
+      map[cat] = product.images[0];
+    }
+  });
+
+  return map;
+}, [products]);
 
 const filteredProducts = products.filter((p) => {
   const matchSearch = p.name.toLowerCase().includes(search.toLowerCase());
@@ -191,19 +204,31 @@ const placeOrder = async () => {
             <section className="lg:col-span-2">
               <h2 className="text-4xl font-bold mb-6">Premium Unstitched Collection</h2>
 
-<div className="flex gap-4 overflow-x-auto pb-4 mb-8">
+<div className="flex gap-6 overflow-x-auto pb-4 mb-8">
   {categories.map((cat) => (
-    <button
+    <div
       key={cat}
       onClick={() => setSelectedCategory(cat)}
-      className={`min-w-fit px-6 py-3 rounded-full border whitespace-nowrap transition ${
-        selectedCategory === cat
-          ? "bg-gradient-to-r from-rose-500 to-pink-600"
-          : "bg-white hover:bg-neutral-100"
-      }`}
+      className="flex flex-col items-center cursor-pointer min-w-fit"
     >
-      {cat}
-    </button>
+      <img
+        src={
+          cat === "All"
+            ? "https://placehold.co/100x100?text=All"
+            : categoryImageMap[cat] || "https://placehold.co/100x100"
+        }
+        alt={cat}
+        className={`w-24 h-24 rounded-full object-cover border-4 shadow-lg hover:scale-110 transition duration-300 ${
+          selectedCategory === cat
+            ? "border-rose-600 scale-110"
+            : "border-white"
+        }`}
+      />
+
+      <span className="mt-2 text-sm font-semibold whitespace-nowrap">
+        {cat}
+      </span>
+    </div>
   ))}
 </div>
               {loading ? <p>Loading...</p> : (
