@@ -102,7 +102,7 @@ const filteredProducts = products.filter((p) => {
   return matchSearch && matchCategory;
 });
 
-const delivery = cart.length ? 50 : 0;
+const delivery = cart.length ? 250 : 0;
       const total = subtotal + delivery;
 
 const placeOrder = async () => {
