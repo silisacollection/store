@@ -9,7 +9,7 @@
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
-<body class="bg-neutral-50">
+<body class="bg-gradient-to-br from-rose-50 via-white to-pink-50">
   <div id="root"></div>
 
   <script type="text/babel">
@@ -171,7 +171,17 @@ const placeOrder = async () => {
         placeholder="Search dresses..."
         className="border rounded-full px-4 py-2"
       />
-      <div>Cart ({cart.length})</div>
+      <button
+  onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+  className="relative text-2xl"
+>
+  🛒
+  {cart.length > 0 && (
+    <span className="absolute -top-2 -right-2 bg-rose-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+      {cart.length}
+    </span>
+  )}
+</button>
     </div>
 
   </div>
