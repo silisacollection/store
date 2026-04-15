@@ -29,6 +29,8 @@
       });
       const [orderResult, setOrderResult] = useState(null);
       const [loading, setLoading] = useState(true);
+      const [currentPage, setCurrentPage] = useState("shop");
+      const [placingOrder, setPlacingOrder] = useState(false);
 const [search, setSearch] = useState("");
 const [selectedCategory, setSelectedCategory] = useState("All");
 const [selectedProduct, setSelectedProduct] = useState(null);
@@ -119,6 +121,10 @@ const delivery = cart.length ? 250 : 0;
       const total = subtotal + delivery;
 
 const placeOrder = async () => {
+  if (placingOrder) return;
+
+  setPlacingOrder(true);
+
   try {
     const res = await fetch(API_URL, {
       method: "POST",
@@ -133,7 +139,6 @@ const placeOrder = async () => {
           qty: item.qty,
         })),
       }),
-      redirect: "follow"
     });
 
     const data = await res.json();
@@ -145,9 +150,11 @@ const placeOrder = async () => {
 
     setOrderResult(data);
     setCart([]);
+
   } catch (error) {
     alert("Error placing order: " + error.message);
-    console.error(error);
+  } finally {
+    setPlacingOrder(false);
   }
 };
 
@@ -156,6 +163,7 @@ const placeOrder = async () => {
           <div className="min-h-screen flex items-center justify-center p-8">
             <div className="bg-white shadow-lg rounded-3xl p-10 text-center max-w-lg">
               <h1 className="text-3xl font-bold">Order Confirmed 🎉</h1>
+
               <p className="mt-4">Order Number</p>
               <p className="text-2xl font-semibold mt-2">{orderResult.orderNo}</p>
             </div>
@@ -184,8 +192,8 @@ const placeOrder = async () => {
         placeholder="Search dresses..."
         className="border rounded-full px-4 py-2"
       />
-      <button
-  onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+<button
+  onClick={() => setCurrentPage("checkout")}
   className="relative text-2xl"
 >
   🛒
@@ -200,123 +208,180 @@ const placeOrder = async () => {
   </div>
 </header>
 
-          <main className="max-w-7xl mx-auto px-6 py-10 grid lg:grid-cols-3 gap-8">
-            <section className="lg:col-span-2">
-              <h2 className="text-4xl font-bold mb-6">Premium Unstitched Collection</h2>
+         {currentPage === "shop" && (
+  <main className="max-w-7xl mx-auto px-6 py-10">
+    <section>
+      <h2 className="text-4xl font-bold mb-6">
+        Premium Unstitched Collection
+      </h2>
 
-<div className="flex gap-6 overflow-x-auto pb-4 mb-8">
-  {categories.map((cat) => (
-    <div
-      key={cat}
-      onClick={() => setSelectedCategory(cat)}
-      className="flex flex-col items-center cursor-pointer min-w-fit"
-    >
-      <img
-        src={
-          cat === "All"
-            ? "https://placehold.co/100x100?text=All"
-            : categoryImageMap[cat] || "https://placehold.co/100x100"
-        }
-        alt={cat}
-        className={`w-24 h-24 rounded-full object-cover border-4 shadow-lg hover:scale-110 transition duration-300 ${
-          selectedCategory === cat
-            ? "border-rose-600 scale-110"
-            : "border-white"
-        }`}
-      />
+      <div className="flex gap-6 overflow-x-auto pb-4 mb-8">
+        {categories.map((cat) => (
+          <div
+            key={cat}
+            onClick={() => setSelectedCategory(cat)}
+            className="flex flex-col items-center cursor-pointer min-w-fit"
+          >
+            <img
+              src={
+                cat === "All"
+                  ? LOGO_URL
+                  : categoryImageMap[cat] || "https://placehold.co/100x100"
+              }
+              alt={cat}
+              className={`w-24 h-24 rounded-full object-cover border-4 shadow-lg hover:scale-110 transition duration-300 ${
+                selectedCategory === cat
+                  ? "border-rose-600 scale-110"
+                  : "border-white"
+              }`}
+            />
+            <span className="mt-2 text-sm font-semibold whitespace-nowrap">
+              {cat}
+            </span>
+          </div>
+        ))}
+      </div>
 
-      <span className="mt-2 text-sm font-semibold whitespace-nowrap">
-        {cat}
-      </span>
-    </div>
-  ))}
-</div>
-              {loading ? <p>Loading...</p> : (
-                <div className="grid md:grid-cols-2 gap-6">
-                  {filteredProducts.map((product) => (
-                    <div
-  key={product.product_id}
-  onClick={() => {
-  setSelectedProduct(product);
-  setSelectedImageIndex(0);
-}}
-  className="bg-white rounded-3xl shadow-sm overflow-hidden cursor-pointer hover:shadow-xl transition"
->
-                      <img
-                        src={
-  product.images?.[imageIndexes[product.product_id] || 0] ||
-  "https://placehold.co/600x600"
-}
-                        className="w-full h-72 object-cover"
-                      />
-                      <div className="p-6">
-                        <h3 className="text-xl font-semibold">{product.name}</h3>
-                        <p className="text-neutral-500">Stock: {product.stock}</p>
-                        <p className="text-2xl font-bold mt-3">Rs {product.price}</p>
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredProducts.map((product) => (
+            <div
+              key={product.product_id}
+              onClick={() => {
+                setSelectedProduct(product);
+                setSelectedImageIndex(0);
+              }}
+              className="bg-white rounded-3xl shadow-md hover:shadow-2xl hover:-translate-y-1 transition duration-300 overflow-hidden cursor-pointer"
+            >
+              <img
+                src={
+                  product.images?.[imageIndexes[product.product_id] || 0] ||
+                  "https://placehold.co/600x600"
+                }
+                className="w-full h-80 object-cover hover:scale-105 transition duration-500"
+              />
 
-                        <button
-                          onClick={() => addToCart(product)}
-                          className="w-full mt-4 bg-gradient-to-r from-rose-500 to-pink-600 py-3 rounded-2xl"
-                        >
-                          Add to Cart
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </section>
+              <div className="p-6">
+                <h3 className="text-xl font-semibold">{product.name}</h3>
+                <p className="text-neutral-500">
+                  Stock: {product.stock}
+                </p>
+                <p className="text-2xl font-bold mt-3">
+                  Rs {product.price}
+                </p>
 
-            <aside>
-              <div className="bg-white rounded-3xl shadow-sm p-6 sticky top-24">
-                <h3 className="text-2xl font-semibold mb-4">Checkout</h3>
-
-                {cart.map((item) => (
-                  <div key={item.product_id} className="border-b py-3">
-                    <div className="flex justify-between">
-                      <span>{item.name}</span>
-                      <span>Rs {item.price * item.qty}</span>
-                    </div>
-                    <div className="flex gap-2 mt-2">
-                      <button className="border px-3 rounded" onClick={() => updateQty(item.product_id, item.qty - 1)}>-</button>
-                      <span>{item.qty}</span>
-                      <button className="border px-3 rounded" onClick={() => updateQty(item.product_id, item.qty + 1)}>+</button>
-                    </div>
-                  </div>
-                ))}
-
-                <div className="mt-4 space-y-2">
-                  <div className="flex justify-between"><span>Subtotal</span><span>Rs {subtotal}</span></div>
-                  <div className="flex justify-between"><span>Delivery</span><span>Rs {delivery}</span></div>
-                  <div className="flex justify-between font-bold"><span>Total</span><span>Rs {total}</span></div>
-                </div>
-
-                <div className="mt-6 space-y-3">
-                  <input className="w-full border rounded-2xl p-3" placeholder="Customer Name"
-                    onChange={(e) => setCheckout({...checkout, customer: e.target.value})} />
-<input
-  className="w-full border rounded-2xl p-3"
-  placeholder="03XXXXXXXXX"
-  value={checkout.phone}
-  onChange={(e) =>
-    setCheckout({ ...checkout, phone: e.target.value })
-  }
-/>
-                  <input className="w-full border rounded-2xl p-3" placeholder="Email"
-                    onChange={(e) => setCheckout({...checkout, email: e.target.value})} />
-                  
-                  <textarea className="w-full border rounded-2xl p-3" rows="4" placeholder="Address"
-                    onChange={(e) => setCheckout({...checkout, address: e.target.value})}></textarea>
-                  <button
-                    disabled={!cart.length}
-                    onClick={placeOrder}
-                    className="w-full bg-gradient-to-r from-rose-500 to-pink-600 py-3 rounded-2xl disabled:opacity-50"
-                  >
-                    Place Order
-                  </button>
-                </div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    addToCart(product);
+                  }}
+                  className="w-full mt-4 bg-gradient-to-r from-rose-500 to-pink-600 text-white py-3 rounded-2xl"
+                >
+                  Add to Cart
+                </button>
               </div>
-            </aside>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  </main>
+)}
+
+          {currentPage === "checkout" && (
+  <div className="max-w-4xl mx-auto px-6 py-10">
+    <button
+      onClick={() => setCurrentPage("shop")}
+      className="mb-6 text-rose-600 font-semibold"
+    >
+      ← Back to Shopping
+    </button>
+
+    <div className="bg-white rounded-3xl shadow-xl p-8">
+      <h2 className="text-3xl font-bold mb-6">Checkout</h2>
+
+      {cart.map((item) => (
+        <div
+          key={item.product_id}
+          className="flex justify-between py-4 border-b"
+        >
+          <span>{item.name} × {item.qty}</span>
+          <span>Rs {item.price * item.qty}</span>
+        </div>
+      ))}
+
+      <div className="mt-6 space-y-3">
+        <input
+          className="w-full border rounded-2xl p-3"
+          placeholder="Customer Name"
+          onChange={(e) =>
+            setCheckout({ ...checkout, customer: e.target.value })
+          }
+        />
+
+        <input
+          className="w-full border rounded-2xl p-3"
+          placeholder="03XXXXXXXXX"
+          value={checkout.phone}
+          onChange={(e) =>
+            setCheckout({ ...checkout, phone: e.target.value })
+          }
+        />
+
+        <input
+          className="w-full border rounded-2xl p-3"
+          placeholder="Email"
+          onChange={(e) =>
+            setCheckout({ ...checkout, email: e.target.value })
+          }
+        />
+
+        <textarea
+          className="w-full border rounded-2xl p-3"
+          rows="4"
+          placeholder="Address"
+          onChange={(e) =>
+            setCheckout({ ...checkout, address: e.target.value })
+          }
+        ></textarea>
+      </div>
+
+      <div className="mt-6 space-y-2">
+        <div className="flex justify-between">
+          <span>Subtotal</span>
+          <span>Rs {subtotal}</span>
+        </div>
+        <div className="flex justify-between">
+          <span>Delivery</span>
+          <span>Rs {delivery}</span>
+        </div>
+        <div className="flex justify-between font-bold text-xl">
+          <span>Total</span>
+          <span>Rs {total}</span>
+        </div>
+      </div>
+
+      <button
+        disabled={!cart.length || placingOrder}
+        onClick={placeOrder}
+        className="w-full mt-6 bg-gradient-to-r from-rose-500 to-pink-600 text-white py-4 rounded-2xl disabled:opacity-50"
+      >
+        {placingOrder ? "Processing Order..." : "Place Order"}
+      </button>
+    </div>
+  </div>
+)}
+{cart.length > 0 && currentPage === "shop" && (
+  <div
+    onClick={() => setCurrentPage("checkout")}
+    className="fixed bottom-6 right-6 bg-gradient-to-r from-rose-500 to-pink-600 text-white w-16 h-16 rounded-full shadow-2xl flex items-center justify-center text-2xl cursor-pointer z-50"
+  >
+    🛒
+  </div>
+)}
+
             {selectedProduct && (
   <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
     <div className="bg-white rounded-3xl max-w-4xl w-full grid md:grid-cols-2 overflow-hidden relative">
@@ -447,7 +512,7 @@ const placeOrder = async () => {
     </div>
   </div>
 )}
-          </main>
+
         </div>
       );
     }
