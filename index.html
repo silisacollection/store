@@ -188,7 +188,7 @@ const placeOrder = async () => {
       onClick={() => setSelectedCategory(cat)}
       className={`min-w-fit px-6 py-3 rounded-full border whitespace-nowrap transition ${
         selectedCategory === cat
-          ? "bg-black text-white"
+          ? "bg-gradient-to-r from-rose-500 to-pink-600"
           : "bg-white hover:bg-neutral-100"
       }`}
     >
@@ -221,7 +221,7 @@ const placeOrder = async () => {
 
                         <button
                           onClick={() => addToCart(product)}
-                          className="w-full mt-4 bg-black text-white py-3 rounded-2xl"
+                          className="w-full mt-4 bg-gradient-to-r from-rose-500 to-pink-600 py-3 rounded-2xl"
                         >
                           Add to Cart
                         </button>
@@ -275,7 +275,7 @@ const placeOrder = async () => {
                   <button
                     disabled={!cart.length}
                     onClick={placeOrder}
-                    className="w-full bg-black text-white py-3 rounded-2xl disabled:opacity-50"
+                    className="w-full bg-gradient-to-r from-rose-500 to-pink-600 py-3 rounded-2xl disabled:opacity-50"
                   >
                     Place Order
                   </button>
@@ -369,7 +369,7 @@ const placeOrder = async () => {
 }
             setSelectedProduct(null);
           }}
-          className="mt-8 bg-black text-white py-4 rounded-2xl text-lg"
+          className="mt-8 bg-gradient-to-r from-rose-500 to-pink-600 py-4 rounded-2xl text-lg"
         >
         
           Add to Cart
