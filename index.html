@@ -94,19 +94,12 @@ useEffect(() => {
       );
 
      const categories = ["All", ...new Set(products.map(p => p.category || "Unstitched"))];
-      const categoryImageMap = useMemo(() => {
-  const map = {};
-
-  products.forEach((product) => {
-    const cat = product.category || "Unstitched";
-
-    if (!map[cat] && product.images?.length) {
-      map[cat] = product.images[0];
-    }
-  });
-
-  return map;
-}, [products]);
+      const categoryImageMap = {
+  "Essential Summer": "/essential.png",
+  "Lawn": "/images/lawn.jpg",
+  "Cotton": "/images/cotton.jpg",
+  "Embroidered": "/images/embroidered.jpg",
+};
 
 const filteredProducts = products.filter((p) => {
   const matchSearch = p.name.toLowerCase().includes(search.toLowerCase());
