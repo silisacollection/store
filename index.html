@@ -95,12 +95,12 @@ useEffect(() => {
 
      const categories = ["All", ...new Set(products.map(p => p.category || "Unstitched"))];
    const categoryImageMap = {
-  "Essential Summer": "/essential.png",
+  "Essential Summer": "essential.png",
   "Lawn": "/images/lawn.jpg",
 };
 
 const getCategoryImage = (cat) => {
-  return categoryImageMap[cat] || "/default.jpg";
+  return categoryImageMap[cat] || "default.jpg";
 };
 
 const filteredProducts = products.filter((p) => {
