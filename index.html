@@ -94,11 +94,13 @@ useEffect(() => {
       );
 
      const categories = ["All", ...new Set(products.map(p => p.category || "Unstitched"))];
-      const categoryImageMap = {
+   const categoryImageMap = {
   "Essential Summer": "/essential.png",
   "Lawn": "/images/lawn.jpg",
-  "Cotton": "/images/cotton.jpg",
-  "Embroidered": "/images/embroidered.jpg",
+};
+
+const getCategoryImage = (cat) => {
+  return categoryImageMap[cat] || "/default.jpg";
 };
 
 const filteredProducts = products.filter((p) => {
@@ -216,11 +218,7 @@ const placeOrder = async () => {
             className="flex flex-col items-center cursor-pointer min-w-fit"
           >
             <img
-              src={
-                cat === "All"
-                  ? LOGO_URL
-                  : categoryImageMap[cat] || "https://placehold.co/100x100"
-              }
+              src={cat === "All" ? LOGO_URL : getCategoryImage(cat)}
               alt={cat}
               className={`w-24 h-24 rounded-full object-cover border-4 shadow-lg hover:scale-110 transition duration-300 ${
                 selectedCategory === cat
